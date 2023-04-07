@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.VeMapper">
+	<resultMap id="resultMapSoLuong"
+			   type="com.example.demo.model.Ve">
+		<result column="SoLuongVe" property="SoLuongVe"/>
+		<result column="ngay" property="ngay"/>
+		<result column="TenPhim" property="TenPhim" />
+		<result column="tongVe" property="tongVe" />
+
+	</resultMap>
+	<resultMap id="resultMapVe"
+		type="com.example.demo.model.Ve">
+		<result column="IdVe" property="IdVe" />
+		<result column="GiaVe" property="GiaVe" />
+		<result column="ThueVat" property="ThueVat" />
+		<result column=" MaKH" property="MaKH" />
+		<result column="MaCTGhe" property="MaCTGhe" />
+		<result column="MaNV" property="MaNV" />
+		<result column="MaPhim" property="MaPhim" />
+		<result column="TenPhim" property="TenPhim" />	
+		<result column="Soluong" property="Soluong" />	
+		<result column="ngay" property="ngay" />	
+		<result column="tong" property="tong" />
+		<result column="tenkh" property="tenkh" />
+		<result column="giobatdau" property="giobatdau" />
+		<result column="tencn" property="tencn" />
+		<result column="diachi" property="diachi" />
+		<result column="tenghe" property="tenghe" />
+		<result column="tenloai" property="tenloai" />
+		<result column="sodt" property="sodt" />
+		<result column="giochieu" property="giochieu" />
+		<result column="hinh" property="hinh" />
+		<result column="maghe" property="maghe" />
+		<result column="tenghe" property="tenghe" />
+	</resultMap>
+	<select id="getAllVe1" resultMap="resultMapVe">
+	select phim.maphim,phim.tenphim, count(ve.idve) as Soluong, sum(ve.tonggiave) as tong, xuatchieu.ngay from ve left join chitietghe ON chitietghe.mactghe = ve.mactghe left join xuatchieu ON xuatchieu.maphong = chitietghe.maphong left join phim on phim.maphim = xuatchieu.maphim where phim.maphim=#{maPhim} group by phim.maphim,xuatchieu.ngay
+
+	</select>
+
+	<select id="getLichSuVe" resultMap="resultMapVe">
+select ghe.maghe,ghe.tenghe,ve.giave,khachhang.makh,khachhang.tenkh,phim.tenphim,ve.idve,ngaychieu.ngay,ngaychieu.giobatdau from ve join khachhang on khachhang.makh = ve.makh
+ join chitietghe on chitietghe.mactghe = ve.mactghe join phongchieu on phongchieu.maphong = chitietghe.maphong
+ join xuatchieu on xuatchieu.maphong = phongchieu.maphong join ngaychieu on ngaychieu.stt = xuatchieu.ngay
+ join phim ON phim.maphim = xuatchieu.maphim
+  join ghe ON ghe.maghe = chitietghe.maghe
+where xuatchieu.stt = ve.stt_xc and ve.makh=#{maKH}
+order by ve.idve desc
+	</select>
+	<select id="getAllVe" resultMap="resultMapVe">
+			select * from ve
+			order by idve
+
+	</select>
+	<insert id="insertVe">
+	insert into Ve(GiaVe, ThueVat, MaCTGhe, MaKH,stt_xc) values(#{giaVe},#{thueVat},#{maCTGhe},#{maKH},#{stt_xc})
+	</insert>
+	<select id="getVe" resultMap="resultMapVe">
+		select tenkh,GiaVe, TenPhim, chinhanh.tencn,chinhanh.diachi, concat(phongchieu.tenphong,' - ', ghe.tenghe) as tenghe, loaighe.tenloai, khachhang.sodt, concat(NgayChieu.Ngay,' - ',NgayChieu.giobatdau) as giochieu, phim.hinh
+		from Ve join KhachHang on KhachHang.maKH = Ve.maKH
+		right join ChiTietGhe on ChiTietGhe.maCTGhe = Ve.maCTGhe
+		join ghe on ghe.maghe = ChiTietGhe.maghe
+		join loaighe on loaighe.maloai = ghe.maloai
+		join PhongChieu on PhongChieu.maPhong = ChiTietGhe.maPhong
+		join chinhanh on chinhanh.macn = PhongChieu.macn
+		join xuatchieu on xuatchieu.maPhong = PhongChieu.maPhong
+		join Phim on Phim.maPhim = xuatchieu.maPhim
+		join ngaychieu on ngaychieu.stt = xuatchieu.ngay
+		where idVe = #{idVe} and xuatchieu.stt = Ve.stt_xc
+	</select>
+	<select id="CountVeByChiNhanh" resultMap="resultMapSoLuong">
+		select * from CountVe(#{maCN})
+	</select>
+	<select id="CountVeByPhim" resultMap="resultMapSoLuong">
+		with ve1 as(
+		select  count(idve) as sove, phim.tenphim from ve join chitietghe on chitietghe.mactghe = ve.mactghe
+		join phongchieu on phongchieu.maphong = chitietghe.maphong
+		join xuatchieu on xuatchieu.stt = ve.stt_xc and xuatchieu.maphong = phongchieu.maphong
+		join ngaychieu on ngaychieu.stt = xuatchieu.ngay
+		join phim on phim.maphim = xuatchieu.maphim
+		where macn = #{maCN} and ngaychieu.ngay = CURRENT_DATE
+		group by phim.tenphim
+		order by count(idve)
+		)
+
+
+		select  count(idve) as tongve,sove as soluongve, phim.tenphim from ve join chitietghe on chitietghe.mactghe = ve.mactghe
+		join phongchieu on phongchieu.maphong = chitietghe.maphong
+		join xuatchieu on xuatchieu.stt = ve.stt_xc and xuatchieu.maphong = phongchieu.maphong
+		join ngaychieu on ngaychieu.stt = xuatchieu.ngay
+		join phim on phim.maphim = xuatchieu.maphim
+		join ve1 on phim.tenphim = ve1.tenphim
+		where macn = #{maCN}
+		group by phim.tenphim,sove
+		order by count(idve)
+	</select>
+</mapper>

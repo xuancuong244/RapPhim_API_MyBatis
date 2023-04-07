@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ToppingMapper">
+	<resultMap id="resultMapTP"
+		type="com.example.demo.model.Topping">
+		<result column="MaTopping" property="MaTopping" />
+		<result column="TenTopping" property="TenTopping" />
+		
+	</resultMap>
+	<select id="getAllTP" resultMap="resultMapTP">
+		SELECT *
+		FROM Topping 
+	</select>
+	
+	<insert id="insertTP">
+		INSERT INTO Topping VALUES(#{maTopping},#{tenTopping},#{gia})
+	</insert>
+	
+	<delete id="deleteTP">
+		DELETE FROM Topping
+		WHERE maTopping = #{maTopping}
+	</delete>
+	
+	<update id="updateTP">
+		UPDATE TOPPING
+		SET tenTopping = #{tenTopping}, gia = #{gia}
+		WHERE maTopping = #{maTopping}
+	</update>
+</mapper>

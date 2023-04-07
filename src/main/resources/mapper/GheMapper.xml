@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.GheMapper">
+    <resultMap id="resultMapGhe"
+               type="com.example.demo.model.Ghe">
+        <result column="MaGhe" property="MaGhe"/>
+        <result column="TenGhe" property="TenGhe"/>
+        <result column="MaLoai" property="MaLoai"/>
+        <result column="IdVe" property="IdVe"/>
+        <result column="gia" property="gia"/>
+        <result column="MaCTGhe" property="MaCTGhe"/>
+    </resultMap>
+    <select id="getAllGhe" resultMap="resultMapGhe">
+        SELECT *
+        FROM Ghe
+    </select>
+    <select id="findGhePhong" resultMap="resultMapGhe">
+        SELECT MaLoai,Ghe.MaGhe,TenGhe FROM ChiTietGhe JOIN Ghe on Ghe.MaGhe = ChiTietGhe.MaGhe
+        WHERE MaPhong = #{MaPhong}
+    </select>
+    <select id="findGhePhim" resultMap="resultMapGhe">
+        SELECT ghe.MaLoai,ghe.MaGhe,TenGhe,ve.IdVe, (loaighe.phuthu+xuatchieu.giaxuatchieu) as gia, chitietghe.MaCTGhe
+        FROM chitietghe join phongchieu on phongchieu.maphong = chitietghe.maphong
+        join xuatchieu on phongchieu.maphong = xuatchieu.maphong
+        left join ve on xuatchieu.stt = ve.stt_xc and chitietghe.mactghe  = ve.mactghe
+        join ghe on ghe.maghe  = chitietghe.maghe
+        join loaighe on ghe.maloai = loaighe.maloai
+        where xuatchieu.stt = #{stt_xc}
+        order by chitietghe.mactghe;
+    </select>
+</mapper>

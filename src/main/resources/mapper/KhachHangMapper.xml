@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.KhachHangMapper">
+	<resultMap id="resultMapKH"
+		type="com.example.demo.model.KhachHang">
+		<result column="MaKH" property="MaKH" />
+		<result column="TenKH" property="TenKH" />
+		<result column="MatKhau" property="MatKhau" />
+		<result column="Email" property="Email" />
+		<result column="SoDT" property="SoDT" />
+		<result column="DiaChi" property="DiaChi" />
+		<result column="GioiTinh" property="GioiTinh" />
+		<result column="IdFB" property="IdFB"/>
+		<result column="HinhFB" property="HinhFB"/>
+	</resultMap>
+	<select id="getAllKH" resultMap="resultMapKH">
+		SELECT *
+		FROM KhachHang
+	</select>
+	<select id="findKH" resultMap="resultMapKH">
+		SELECT *
+		FROM KhachHang where email = #{email} and matkhau = #{matkhau}
+	</select>
+	
+	<select id="findFBKH" resultMap="resultMapKH">
+		SELECT *
+		FROM KhachHang where email = #{email};
+	</select>
+	
+	<insert id="insertFBKH">
+		INSERT INTO KhachHang (TenKH, Email, IdFB, HinhFB) VALUES (#{tenkh}, #{email}, #{idfb}, #{hinhfb});
+	</insert>
+
+	<insert id="insertKH">
+		insert into KhachHang(TenKH,Email,SoDT,DiaChi,MatKhau,gioiTinh) values(#{tenKH},#{email},#{soDT},#{diaChi},#{matKhau},#{gioiTinh})
+	</insert>
+
+	<insert id="insertKHWEB">
+		insert into KhachHang(TenKH,Email,SoDT,MatKhau) values(#{tenKH},#{email},#{soDT},#{matKhau})
+	</insert>
+
+	<update id="updateKH">
+		update KhachHang set  TenKH = #{tenKH} , Email = #{email}, SoDT = #{soDT}, DiaChi = #{diaChi}, MatKhau = #{matKhau} where makh =#{maKH}
+	</update>
+	<delete id="deleteKH">
+		delete from KhachHang where makh =#{maKH}
+	</delete>
+	<select id="getOneKH" resultMap="resultMapKH">
+		select * from khachhang where makh=#{maKH}
+	</select>
+	<update id="updateKH2">
+		update KhachHang set  hinhfb = #{hinhfb} where makh =#{maKH}
+	</update>
+</mapper>

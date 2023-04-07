@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.NgayChieuMapper">
+	<resultMap id="resultMapNgayChieu"
+		type="com.example.demo.model.NgayChieu">
+		<result column="Stt" property="Stt" />
+		<result column="Ngay" property="Ngay" />
+		<result column="GioBatDau" property="GioBatDau" />
+		<result column="stt_xc" property="stt_xc" />
+
+
+	</resultMap>
+	<select id="getGioByPhim" resultMap="resultMapNgayChieu">
+		select xuatchieu.ngay,ngaychieu.giobatdau
+		from xuatchieu join ngaychieu on ngaychieu.stt = xuatchieu.stt
+			where xuatchieu.maphim = #{maPhim} and ngaychieu.ngay = cast (#{Ngay} as date)
+	</select>
+
+	<select id="getGioBatDau" resultMap="resultMapNgayChieu">
+		select ngaychieu.stt ,ngaychieu.giobatdau, xuatchieu.stt as stt_xc
+		from chinhanh join phongchieu on phongchieu.macn = chinhanh.macn
+		join xuatchieu on xuatchieu.maphong = phongchieu.maphong
+		join ngaychieu on ngaychieu.stt = xuatchieu.ngay
+		join phim on phim.maphim = xuatchieu.maphim
+		where chinhanh.macn = #{maCN} and phim.maphim = #{maPhim} and ngaychieu.ngay = CURRENT_DATE and ngaychieu.giobatdau >cast( to_char(now(), 'HH24:MI:SS') as time)
+		order by ngaychieu.giobatdau
+	</select>
+
+	<select id="insertNgayChieu" resultType="int">
+		insert into NgayChieu (ngay,giobatdau) values(cast (#{ngay} as date),cast (#{gioBatDau} as time)
+	</select>
+    <select id="getNgay" resultMap="resultMapNgayChieu">
+	select distinct ngay from ngaychieu
+where ngay between current_date and current_date +integer '3'
+    </select>
+	<select id="getNgayChieu" resultMap="resultMapNgayChieu">
+		select * from ngaychieu where ngay = cast (#{ngay} as date) and gioBatDau = cast (#{gioBatDau} as time)
+	</select>
+	<select id="getMaxStt" resultMap="resultMapNgayChieu">
+		select max(stt) as stt from NgayChieu
+	</select>
+		<select id="getgiobatdau1ngay" resultMap="resultMapNgayChieu">
+	select distinct ngaychieu.giobatdau from ngaychieu join xuatchieu on xuatchieu.ngay = ngaychieu.stt 
+join phongchieu on phongchieu.maphong = xuatchieu.maphong
+join chinhanh on chinhanh.macn = phongchieu.macn
+where chinhanh.macn=#{maCN} and ngaychieu.ngay = cast (#{ngay} as date)
+	</select>
+</mapper>
